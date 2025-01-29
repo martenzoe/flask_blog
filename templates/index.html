@@ -21,6 +21,7 @@
             <p class="author"><em>Written by {{ post.author }}</em></p>
             {% endif %}
             <p class="content">{{ post.content }}</p>
+            <a href="{{ url_for('update', post_id=post.id) }}" class="update-button"><i class="fas fa-edit"></i> Update</a>
             <a href="{{ url_for('delete', post_id=post.id) }}" class="delete-button"><i class="fas fa-trash"></i> Delete</a>
         </article>
         {% endfor %}

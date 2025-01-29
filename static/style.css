@@ -54,3 +54,19 @@ h1 {
 .delete-button:hover {
     background-color: #d32f2f;
 }
+
+
+.update-button {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 3px;
+    font-size: 0.9em;
+    margin-right: 10px;
+}
+
+.update-button:hover {
+    background-color: #45a049;
+}
