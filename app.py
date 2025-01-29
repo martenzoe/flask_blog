@@ -1,70 +1,76 @@
-from flask import Flask, render_template, json, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for
 import json
 
 app = Flask(__name__)
 
-# Blog-Beiträge aus der JSON-Datei lesen
-with open('blog_posts.json', 'r') as file:
-    blog_posts = json.load(file)
+# Load blog posts from the JSON file
+try:
+    with open('blog_posts.json', 'r') as file:
+        blog_posts = json.load(file)
+except FileNotFoundError:
+    blog_posts = []
+except json.JSONDecodeError:
+    blog_posts = []
+
 
 @app.route('/')
 def index():
+    """
+    Render the home page with a list of all blog posts.
+    """
     return render_template('index.html', posts=blog_posts)
+
 
 @app.route('/add', methods=['GET', 'POST'])
 def add():
+    """
+    Handle adding a new blog post.
+    - On GET: Render the form to add a new post.
+    - On POST: Add the new post to the list and save it to the JSON file.
+    """
     global blog_posts
+
     if request.method == 'POST':
-        title = request.form.get('title')
-        content = request.form.get('content')
+        try:
+            title = request.form.get('title')
+            content = request.form.get('content')
 
-        # Generieren einer eindeutigen ID
-        new_id = max([post['id'] for post in blog_posts], default=0) + 1
+            # Generate a unique ID for the new post
+            new_id = max([post['id'] for post in blog_posts], default=0) + 1
 
-        # Neuen Blog-Beitrag erstellen
-        new_post = {
-            'id': new_id,
-            'title': title,
-            'content': content
-        }
+            # Create the new blog post
+            new_post = {
+                'id': new_id,
+                'title': title,
+                'content': content
+            }
 
-        # Beitrag zur Liste hinzufügen
-        blog_posts.append(new_post)
+            # Add the new post to the list
+            blog_posts.append(new_post)
 
-        # Speichern der aktualisierten blog_posts in der JSON-Datei
-        with open('blog_posts.json', 'w') as file:
-            json.dump(blog_posts, file, indent=4)
+            # Save the updated list to the JSON file
+            with open('blog_posts.json', 'w') as file:
+                json.dump(blog_posts, file, indent=4)
 
-        return redirect(url_for('index'))
+            return redirect(url_for('index'))
+
+        except Exception as e:
+            return f"An error occurred while adding the post: {e}", 500
 
     return render_template('add.html')
 
 
 @app.route('/delete/<int:post_id>')
 def delete(post_id):
+    """
+    Handle deleting a blog post by its ID.
+    - Remove the post from the list and update the JSON file.
+    """
     global blog_posts
-    # Finden und Entfernen des Blog-Posts mit der gegebenen ID
-    blog_posts = [post for post in blog_posts if post['id'] != post_id]
 
-    # Aktualisieren der JSON-Datei
-    with open('blog_posts.json', 'w') as file:
-        json.dump(blog_posts, file, indent=4)
-
-    # Zurück zur Startseite
-    return redirect(url_for('index'))
-
-
-@app.route('/update/<int:post_id>', methods=['GET', 'POST'])
-def update(post_id):
-    global blog_posts
-    post = next((post for post in blog_posts if post['id'] == post_id), None)
-    if post is None:
-        return "Post not found", 404
-
-    if request.method == 'POST':
-        # Update the post
-        post['title'] = request.form.get('title')
-        post['content'] = request.form.get('content')
+    try:
+        # Find and remove the post with the given ID
+        blog_posts = [post for post in blog_posts if post['id'] != post_id]
 
         # Update the JSON file
         with open('blog_posts.json', 'w') as file:
@@ -72,9 +78,45 @@ def update(post_id):
 
         return redirect(url_for('index'))
 
-    # If it's a GET request, display the update form
-    return render_template('update.html', post=post)
+    except Exception as e:
+        return f"An error occurred while deleting the post: {e}", 500
+
+
+@app.route('/update/<int:post_id>', methods=['GET', 'POST'])
+def update(post_id):
+    """
+    Handle updating an existing blog post.
+    - On GET: Render a form pre-filled with the current details of the post.
+    - On POST: Update the details of the post and save it to the JSON file.
+    """
+    global blog_posts
+
+    try:
+        # Find the post by its ID
+        post = next((post for post in blog_posts if post['id'] == post_id), None)
+        if not post:
+            return "Post not found", 404
+
+        if request.method == 'POST':
+            # Update the post details
+            post['title'] = request.form.get('title')
+            post['content'] = request.form.get('content')
+
+            # Save the updated list to the JSON file
+            with open('blog_posts.json', 'w') as file:
+                json.dump(blog_posts, file, indent=4)
+
+            return redirect(url_for('index'))
+
+        # Render the update form for a GET request
+        return render_template('update.html', post=post)
+
+    except Exception as e:
+        return f"An error occurred while updating the post: {e}", 500
 
 
 if __name__ == '__main__':
+    """
+    Run the Flask application on host 0.0.0.0 and port 5001 in debug mode.
+    """
     app.run(host="0.0.0.0", port=5001, debug=True)
