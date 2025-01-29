@@ -25,3 +25,32 @@ h1 {
 .post p {
     margin: 10px 0;
 }
+
+.add-post-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.add-post-button:hover {
+    background-color: #45a049;
+}
+
+
+.delete-button {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #f44336;
+    color: white;
+    text-decoration: none;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+.delete-button:hover {
+    background-color: #d32f2f;
+}
