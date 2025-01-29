@@ -114,6 +114,32 @@ def update(post_id):
     except Exception as e:
         return f"An error occurred while updating the post: {e}", 500
 
+@app.route('/like/<int:post_id>')
+def like(post_id):
+    """
+    Increment the 'likes' count for a specific blog post.
+    """
+    global blog_posts
+
+    try:
+        # Find the post by its ID
+        post = next((post for post in blog_posts if post['id'] == post_id), None)
+        if not post:
+            return "Post not found", 404
+
+        # Increment the 'likes' count (initialize to 0 if not present)
+        post['likes'] = post.get('likes', 0) + 1
+
+        # Save the updated list to the JSON file
+        with open('blog_posts.json', 'w') as file:
+            json.dump(blog_posts, file, indent=4)
+
+        # Redirect back to the index page
+        return redirect(url_for('index'))
+
+    except Exception as e:
+        return f"An error occurred while liking the post: {e}", 500
+
 
 if __name__ == '__main__':
     """

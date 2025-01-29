@@ -134,3 +134,17 @@ h1 {
 .back-link:hover {
     text-decoration: underline;
 }
+
+.like-button {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #008CBA;
+    color: white;
+    text-decoration: none;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+.like-button:hover {
+    background-color: #007BB5;
+}

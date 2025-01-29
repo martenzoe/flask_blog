@@ -10,19 +10,38 @@
 <body>
     <header>
         <h1>Welcome to My Flask Blog!</h1>
-        <a href="{{ url_for('add') }}" class="add-post-button"><i class="fas fa-plus"></i> Add New Post</a>
+        <a href="{{ url_for('add') }}" class="add-post-button">
+            <i class="fas fa-plus"></i> Add New Post
+        </a>
     </header>
 
     <main>
         {% for post in posts %}
         <article class="post">
             <h2>{{ post.title }}</h2>
+
             {% if post.author %}
             <p class="author"><em>Written by {{ post.author }}</em></p>
             {% endif %}
+
             <p class="content">{{ post.content }}</p>
-            <a href="{{ url_for('update', post_id=post.id) }}" class="update-button"><i class="fas fa-edit"></i> Update</a>
-            <a href="{{ url_for('delete', post_id=post.id) }}" class="delete-button"><i class="fas fa-trash"></i> Delete</a>
+
+            <div class="post-actions">
+                <!-- Update Button -->
+                <a href="{{ url_for('update', post_id=post.id) }}" class="update-button">
+                    <i class="fas fa-edit"></i> Update
+                </a>
+
+                <!-- Delete Button -->
+                <a href="{{ url_for('delete', post_id=post.id) }}" class="delete-button">
+                    <i class="fas fa-trash"></i> Delete
+                </a>
+
+                <!-- Like Button -->
+                <a href="{{ url_for('like', post_id=post.id) }}" class="like-button">
+                    <i class="fas fa-thumbs-up"></i> Like ({{ post.likes | default(0) }})
+                </a>
+            </div>
         </article>
         {% endfor %}
     </main>
